@@ -22,8 +22,13 @@
   (doseq [f src-files]
     (load-file (path-from f)))) :dir)
 
-(defn- run-loaded-specs [] 
-  (pretty-print (verify (all-specs))))
+(defn- verify-loaded-specs []
+  (let [verification-result (verify (all-specs))]
+    (pretty-print verification-result)
+    (if (= :success (:status verification-result))
+      0
+      1)))
 
 (load-specs-from (first *command-line-args*))
-(run-loaded-specs)
+
+(System/exit (verify-loaded-specs))

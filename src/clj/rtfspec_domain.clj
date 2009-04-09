@@ -5,6 +5,7 @@
 (defstruct specification :name :imperatives)
 (defstruct imperative-result :imperative :status)
 (defstruct specification-result :specification :status)
+(defstruct specification-list-results :specifications :results :status)
 
 (def *specs* (ref '()))
 
@@ -38,6 +39,9 @@
 		:status (reduce consolidate-result :success 
 				(map verify-imperative (:imperatives spec)))))
 
+(defn- verification-status [spec-result-list]
+  (reduce consolidate-result :success spec-result-list))
+
 ;; API
 (defn add-spec [spec]
   (dosync (alter *specs* conj spec)))
@@ -46,7 +50,8 @@
   @*specs*)
 
 (defn verify [specs]
-  (map verify-spec specs))
+  (let [specs-results (map verify-spec specs)]
+    (struct-quack specification-list-results :specifications specs :results specs-results  :status (verification-status specs-results))))
 
 (defn make-imperative [type description code]
   (struct-quack imperative :kind type :description description :code code))
@@ -54,5 +59,3 @@
 (defn make-spec [name imperatives]
   (struct-quack specification :name name :imperatives imperatives))
 
-(defn verification-status [spec-result-list]
-  (reduce consolidate-result :success spec-result-list))

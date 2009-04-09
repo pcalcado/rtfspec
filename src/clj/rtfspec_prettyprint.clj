@@ -1,7 +1,7 @@
 (ns rtfspec-prettyprint
   (:use rtfspec-domain))
 
-(defmulti pretty-print verification-status)
+(defmulti pretty-print :status)
 
 (defmethod pretty-print :success [spec-list]
   (println "yay"))
