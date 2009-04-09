@@ -95,15 +95,6 @@
 	<path refid="test.dependencies"/>
       </classpath>
     </java>
-    <echo message="----------Pending----------"/>
-    <java classname="clojure.lang.Script" failonerror="true" fork="true">
-      <arg value="${rtfspec.run.clj}"/>
-      <arg value="--"/>
-      <arg value="${test.smoke.dir}/pending" />
-      <classpath>
-	<path refid="test.dependencies"/>
-      </classpath>
-    </java>
     <echo message="----------Failure (Won't break the build)----------"/>
     <java classname="clojure.lang.Script" failonerror="false" fork="true">
       <arg value="${rtfspec.run.clj}"/>

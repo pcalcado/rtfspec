@@ -5,4 +5,11 @@
        an absolute requirement of the specification."
 
       (must "be success if test returns true"
-	    (= true true)))
+	    (= true true))
+
+      (must "allow multiple lines"
+	    (and
+	     (and true
+		  (= 1 1)
+		  (> 1 0))
+	     true)))

@@ -22,12 +22,17 @@
   (doseq [f src-files]
     (load-file (path-from f)))) :dir)
 
+(defn- translate-status-to-exit-code [status]
+  (cond
+    (= :success status) 0
+    (= :failure status) 1
+    (= :should-success status) 0
+    (= :should-failure status) 0))
+
 (defn- verify-loaded-specs []
   (let [verification-result (verify (all-specs))]
     (pretty-print verification-result)
-    (if (= :success (:status verification-result))
-      0
-      1)))
+    (translate-status-to-exit-code (:status verification-result))))
 
 (load-specs-from (first *command-line-args*))
 
