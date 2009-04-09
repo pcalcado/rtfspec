@@ -78,7 +78,7 @@
     <java classname="clojure.lang.Script" failonerror="true" fork="true">
       <arg value="${rtfspec.run.clj}"/>
       <arg value="--"/>
-      <arg value="test/rtfspec/" />
+      <arg value="${test.self.dir}" />
       <classpath>
 	<path refid="test.dependencies"/>
       </classpath>
@@ -90,7 +90,7 @@
     <java classname="clojure.lang.Script" failonerror="true" fork="true">
       <arg value="${rtfspec.run.clj}"/>
       <arg value="--"/>
-      <arg value="test/smoke/success"/>
+      <arg value="${test.smoke.dir}/success" />
       <classpath>
 	<path refid="test.dependencies"/>
       </classpath>
@@ -99,7 +99,7 @@
     <java classname="clojure.lang.Script" failonerror="true" fork="true">
       <arg value="${rtfspec.run.clj}"/>
       <arg value="--"/>
-      <arg value="test/smoke/pending"/>
+      <arg value="${test.smoke.dir}/pending" />
       <classpath>
 	<path refid="test.dependencies"/>
       </classpath>
@@ -108,7 +108,7 @@
     <java classname="clojure.lang.Script" failonerror="false" fork="true">
       <arg value="${rtfspec.run.clj}"/>
       <arg value="--"/>
-      <arg value="test/smoke/failure"/>
+      <arg value="${test.smoke.dir}/failure" />
       <classpath>
         <path refid="test.dependencies"/>
       </classpath>
@@ -117,7 +117,7 @@
     <java classname="clojure.lang.Script" failonerror="false" fork="true">
       <arg value="${rtfspec.run.clj}"/>
       <arg value="--"/>
-      <arg value="test/smoke/exception"/>
+      <arg value="${test.smoke.dir}/exception" />
       <classpath>
 	<path refid="test.dependencies"/>
       </classpath>
