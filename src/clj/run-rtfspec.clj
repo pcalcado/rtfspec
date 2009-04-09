@@ -1,5 +1,5 @@
 (ns run-rtfspec
-  (:use rtfspec-domain)
+  (:use rtfspec-domain rtfspec-prettyprint)
   (:import (java.io File)))
 
 (defn- path-from [file] (. file getAbsolutePath))
@@ -23,7 +23,7 @@
     (load-file (path-from f)))) :dir)
 
 (defn- run-loaded-specs [] 
-  (println (all-specs)))
+  (pretty-print (verify (all-specs))))
 
 (load-specs-from (first *command-line-args*))
 (run-loaded-specs)

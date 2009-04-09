@@ -39,7 +39,7 @@
   </target>
 
   <target name="compile" description="Compile sources">
-    <java classname="clojure.lang.Compile" failonerror="true">
+    <java classname="clojure.lang.Compile" >
       <classpath>
         <path location="${build.dir}"/>
          <path location="${source.dir}"/>

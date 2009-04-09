@@ -12,3 +12,6 @@
 
 (defmacro must [description & impl]
   `(make-imperative :must ~description ~@impl))
+
+(defmacro must-not [description & impl]
+  `(make-imperative :must-not ~description ~@impl))
