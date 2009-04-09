@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<project name="rtfspec" default="package">
+  <property name="build.dir" location="classes"/>
+
+  <property name="deps.dir" location="lib"/>
+
+  <property name="source.dir" location="src/clj"/>
+
+  <property name="test.base.dir" location="test"/>
+  <property name="test.smoke.dir" location="${test.base.dir}/smoke"/>
+  <property name="test.self.dir" location="${test.base.dir}/self"/>
+
+  <property name="rtfspec.jar" location="rtfspec.jar"/>
+  <property name="rtfspec.run.script" location="src/script/rtfspec"/>
+  <property name="rtfspec.run.clj" location="${source.dir}/run-rtfspec.clj"/>
+  
+  <path id="dependencies">
+    <fileset dir="${deps.dir}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="test.dependencies">
+    <path refid="dependencies"/>
+    <path location="${source.dir}"/>
+    <pathelement location="${rtfspec.jar}" />
+  </path>
+
+  <target name="package" description="Create the jar, run tests" depends="jar, all-tests" />
+
+  <target name="clean" description="Remove generated files">
+    <delete file="${rtfspec.jar}"/>
+    <delete dir="${build.dir}"/>
+  </target>
+
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${build.dir}"/>
+  </target>
+
+  <target name="compile" description="Compile sources">
+    <java classname="clojure.lang.Compile" failonerror="true">
+      <classpath>
+        <path location="${build.dir}"/>
+         <path location="${source.dir}"/>
+        <fileset dir="${deps.dir}">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+      <sysproperty key="clojure.compile.path" value="${build.dir}"/>
+      <arg value="rtfspec"/>
+    </java>
+  </target>
+
+  <target name="jar" depends="init, compile" description="Create jar file">
+    <jar jarfile="${rtfspec.jar}">
+      <path location="LICENSE"/>
+      <fileset dir="${source.dir}" includes="**/*.clj"/>
+      <fileset dir="${build.dir}" includes="**/*.class"/>
+    </jar>
+  </target>
+
+  <target name="test-clojure" description="Run Smoke tests for Rtfspec">
+    <java classname="clojure.lang.Script" failonerror="true" fork="true">
+      <arg value="${rtfspec.run.clj}"/>
+      <arg value="--"/>
+      <arg value="test/smoke"/>
+      <classpath>
+	<path refid="test.dependencies"/>
+      </classpath>
+    </java>
+  </target>
+
+  <target name="all-tests" description="Run all tests" depends="self-test, smoke-test" />
+
+  <target name="self-test" description="Run Rtfspec unit tests">
+    <echo message="----------Self-Test----------"/>
+    <java classname="clojure.lang.Script" failonerror="true" fork="true">
+      <arg value="${rtfspec.run.clj}"/>
+      <arg value="--"/>
+      <arg value="test/rtfspec/" />
+      <classpath>
+	<path refid="test.dependencies"/>
+      </classpath>
+    </java>
+  </target>
+
+  <target name="smoke-test" description="">
+    <echo message="----------Success----------"/>
+    <java classname="clojure.lang.Script" failonerror="true" fork="true">
+      <arg value="${rtfspec.run.clj}"/>
+      <arg value="--"/>
+      <arg value="test/smoke/success"/>
+      <classpath>
+	<path refid="test.dependencies"/>
+      </classpath>
+    </java>
+    <echo message="----------Pending----------"/>
+    <java classname="clojure.lang.Script" failonerror="true" fork="true">
+      <arg value="${rtfspec.run.clj}"/>
+      <arg value="--"/>
+      <arg value="test/smoke/pending"/>
+      <classpath>
+	<path refid="test.dependencies"/>
+      </classpath>
+    </java>
+    <echo message="----------Failure (Won't break the build)----------"/>
+    <java classname="clojure.lang.Script" failonerror="false" fork="true">
+      <arg value="${rtfspec.run.clj}"/>
+      <arg value="--"/>
+      <arg value="test/smoke/failure"/>
+      <classpath>
+        <path refid="test.dependencies"/>
+      </classpath>
+    </java>
+    <echo message="----------Exception (Won't break the build)----------"/>
+    <java classname="clojure.lang.Script" failonerror="false" fork="true">
+      <arg value="${rtfspec.run.clj}"/>
+      <arg value="--"/>
+      <arg value="test/smoke/exception"/>
+      <classpath>
+	<path refid="test.dependencies"/>
+      </classpath>
+    </java>
+  </target>
+</project>

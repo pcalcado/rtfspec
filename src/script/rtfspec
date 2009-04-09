@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]
+then
+    echo "=> Usage: rtfspec [<path to test script>.clj|<path to directory>]"
+    echo "Make sure you have all dependencies in the CLASSPATH."
+    exit 1
+fi
+
+java -cp deps/clojure.jar:deps/clojure-contrib.jar clojure.lang.Script run-rtfspec.clj -- $1
