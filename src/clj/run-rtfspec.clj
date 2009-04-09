@@ -23,9 +23,5 @@
 
 (defn- run-loaded-specs [] true)
 
-
-
-
-
 (load-specs-from (first *command-line-args*))
 (run-loaded-specs)
