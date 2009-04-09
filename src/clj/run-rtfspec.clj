@@ -1,4 +1,5 @@
-(ns run-rtfspec 
+(ns run-rtfspec
+  (:use rtfspec-domain)
   (:import (java.io File)))
 
 (defn- path-from [file] (. file getAbsolutePath))
@@ -21,7 +22,8 @@
   (doseq [f src-files]
     (load-file (path-from f)))) :dir)
 
-(defn- run-loaded-specs [] true)
+(defn- run-loaded-specs [] 
+  (println (all-specs)))
 
 (load-specs-from (first *command-line-args*))
 (run-loaded-specs)

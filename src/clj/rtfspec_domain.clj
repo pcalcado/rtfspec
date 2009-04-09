@@ -10,4 +10,11 @@
 (defn make-spec [name imperatives]
   (struct-quack specification :name name :imperatives imperatives))
 
-(defn add-spec [spec] )
+(def *specs* (ref '()))
+
+(defn add-spec [spec]
+  (dosync (alter *specs* conj spec)))
+
+(defn all-specs []
+  @*specs*)
+

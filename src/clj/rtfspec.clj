@@ -8,7 +8,7 @@
   (add-spec (make-spec name imperatives)))
 
 (defn spec [name & imperatives]
-  `(a-spec ~name imperatives))
+  (a-spec name imperatives))
 
 (defmacro must [description & impl]
   `(make-imperative :must ~description ~@impl))
