@@ -31,7 +31,6 @@
 
 (defn- verify-loaded-specs []
   (let [verification-result (verify (all-specs))]
-    (pretty-print-stats verification-result)
     (pretty-print-verification-results verification-result)
     (pretty-print-stats verification-result)
     (translate-status-to-exit-code (:status verification-result))))

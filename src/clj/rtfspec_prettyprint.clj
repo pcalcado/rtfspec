@@ -20,7 +20,7 @@
 
 (defn pretty-print-stats [spec-list]
   (let [all-test-results (all-results-in spec-list)]
-    (println (count all-test-results) " Tests")
-    (println (count (all-successful-among all-test-results)) " Successful " 
-	     (count (all-failed-among all-test-results)) " Failed " 
-	     (count (all-pending-among all-test-results)) " Pending " )))
+    (println (count all-test-results) "Tests:"
+	     (count (all-successful-among all-test-results)) "Successful" 
+	     (count (all-failed-among all-test-results)) "Failed" 
+	     (count (all-pending-among all-test-results)) "Pending" )))
