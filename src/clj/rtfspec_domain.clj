@@ -4,7 +4,7 @@
 (defstruct imperative :kind :description :code)
 (defstruct specification :name :imperatives)
 (defstruct imperative-result :imperative :status)
-(defstruct specification-result :specification :status)
+(defstruct specification-result :specification :results :status)
 (defstruct specification-list-results :specifications :results :status)
 
 (def *specs* (ref '()))
@@ -52,10 +52,13 @@
   (struct-quack imperative-result :imperative imperative :status (convert-should-return (not (eval (:code imperative))))))
 
 (defn- verify-spec [spec]
-  (struct-quack specification-result 
-		:specification spec 
-		:status (reduce consolidate-result :success 
-				(map verify-imperative (:imperatives spec)))))
+  (let [imperative-results (map verify-imperative (:imperatives spec))]
+    (struct-quack specification-result	
+		  :specification spec
+		  :results imperative-results
+		  :status (reduce 
+			   consolidate-result :success 
+			     imperative-results))))
 
 (defn- verification-status [spec-result-list]
   (reduce consolidate-result :success spec-result-list))
@@ -77,3 +80,19 @@
 (defn make-spec [name imperatives]
   (struct-quack specification :name name :imperatives imperatives))
 
+(defn all-results-in [spec-list-result]
+  (if spec-list-result
+    (reduce concat (map :results (:results spec-list-result)))
+    '()))
+
+(defn all-successful-among [results]
+  (filter #(= :success (:status %)) results))
+
+(defn all-failed-among [results]
+  (filter #(= :failure (:status %)) results))
+
+(defn all-pending-among [results]
+  (filter #(or
+	    (= :should-failure (:status %))
+	    (= :should-success (:status %)))
+	    results))
