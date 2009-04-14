@@ -4,8 +4,6 @@ A testing framework based on RFC-2119 ( http://www.ietf.org/rfc/rfc2119.txt )
 
 ##Example
 
-
-<pre><code>
 (use 'rtfspec)
 
 (spec "1. MUST 
@@ -29,7 +27,7 @@ A testing framework based on RFC-2119 ( http://www.ietf.org/rfc/rfc2119.txt )
 
       (should-not "break the build because a should block failed"
             true))				
-</code></pre>
+
 
 ## TODO
 
