@@ -1,9 +1,9 @@
-RTFSpec - A Spec-like Testing Framework for Clojure
-==============
+# RTFSpec - A Spec-like Testing Framework for Clojure
+
 A testing framework based on RFC-2119 ( http://www.ietf.org/rfc/rfc2119.txt )
 
-Example
-=======
+##Example
+
 
 <pre><code>
 (use 'rtfspec)
@@ -31,11 +31,11 @@ Example
             true))				
 </code></pre>
 
-TODO
-=======
+## TODO
 
-For beta
---------
+
+
+###For beta
 
 [ ] Documentation :)
 [ ] Proper ant task
@@ -45,8 +45,8 @@ For beta
 [ ] Nice error msgs for malformed facts
 [ ] Some way to expect an exception
 
-Nice to have
-------------
+### Nice to have
+
 [ ] Autospec
 [ ] Code coverage
 [ ] Run tests in parallel
