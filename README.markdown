@@ -30,3 +30,24 @@ Example
       (should-not "break the build because a should block failed"
             true))				
 </code></pre>
+
+TODO
+====
+
+For beta
+--------
+
+[ ] Documentation :)
+[ ] Proper ant task
+[ ] Should list failed specs
+[ ] Should list exceptions
+[ ] Cleanup result feedback function passing - it's a mess
+[ ] Nice error msgs for malformed facts
+[ ] Some way to expect an exception
+
+Nice to have
+------------
+[ ] Autospec
+[ ] Code coverage
+[ ] Run tests in parallel
+[ ] More smoke tests, tests for core.clj would be lovely
