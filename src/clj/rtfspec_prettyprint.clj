@@ -13,16 +13,16 @@
   (str color text ansi-default))
 
 (defn- println-success [text]
-  (println (wrap-in-color text ansi-green)))
+  (println "\n" (wrap-in-color text ansi-green)))
 
 (defn- println-failure [text]
-  (println (wrap-in-color text ansi-red)))
+  (println "\n" (wrap-in-color text ansi-red)))
 
 (defn- println-pending [text]
-  (println (wrap-in-color text ansi-brown)))
+  (println "\n" (wrap-in-color text ansi-brown)))
 
-(defn- println-unknwon [text]
-  (println (wrap-in-color text ansi-purple)))
+(defn- println-unknown [text]
+  (println "\n" (wrap-in-color text ansi-purple)))
 
 (defmulti pretty-print-verification-results :status)
 
@@ -39,7 +39,7 @@
   (println-pending "Pending [Failure]"))
 
 (defmethod pretty-print-verification-results :default [spec-list]
-  (println-unknwon (:status spec-list) "?"))
+  (println-unknown (str spec-list "?")))
 
 (defn pretty-print-stats [spec-list]
   (let [all-test-results (all-results-in spec-list)]
@@ -48,3 +48,21 @@
 	     (wrap-in-color (str (count (all-failed-among all-test-results)) " Failed") ansi-red)
 	     (wrap-in-color (str (count (all-pending-among all-test-results)) " Pending" ) ansi-brown) 
 	     ")" )))
+
+
+(defmulti pretty-print-result :status)
+
+(defmethod pretty-print-result :success [_]
+  (print (wrap-in-color "." ansi-green)))
+
+(defmethod pretty-print-result :failure [_]
+  (print (wrap-in-color "F" ansi-red)))
+
+(defmethod pretty-print-result :should-success [_]
+  (print (wrap-in-color "P" ansi-brown)))
+
+(defmethod pretty-print-result :should-failure [_]
+  (print (wrap-in-color "P" ansi-brown)))
+
+(defmethod pretty-print-result :default [_]
+  (print (wrap-in-color "?" ansi-purple)))

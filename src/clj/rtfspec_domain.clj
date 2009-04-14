@@ -26,33 +26,47 @@
 				    consolidated)
        :else current)))
 
-
-(defmulti verify-imperative :kind)
-
 (defn- convert-must-return [status]
   (cond
     status :success
     (not status) :failure))
-
-(defmethod verify-imperative :must [imperative]
-  (struct-quack imperative-result :imperative imperative :status (convert-must-return (eval (:code imperative)))))
-
-(defmethod verify-imperative :must-not [imperative]
-  (struct-quack imperative-result :imperative imperative :status (convert-must-return (not (eval (:code imperative))))))
 
 (defn- convert-should-return [status]
   (cond
     status :should-success
     (not status) :should-failure))
 
-(defmethod verify-imperative :should [imperative]
-  (struct-quack imperative-result :imperative imperative :status (convert-should-return (eval (:code imperative)))))
+(defmacro eval-with-callback [imperative status callback]
+  `(let [imperative-result# (struct-quack imperative-result
+			      :imperative ~imperative
+			      :status ~status)]
+     (~callback imperative-result#) 
+     imperative-result#))
 
-(defmethod verify-imperative :should-not [imperative]
-  (struct-quack imperative-result :imperative imperative :status (convert-should-return (not (eval (:code imperative))))))
+(defmulti verify-imperative (fn find-kind [imperative _] (imperative :kind)))
 
-(defn- verify-spec [spec]
-  (let [imperative-results (map verify-imperative (:imperatives spec))]
+(defmethod verify-imperative :must [imperative callback]
+  (eval-with-callback imperative 
+		      (convert-must-return (eval (:code imperative)))
+		      callback))
+
+(defmethod verify-imperative :must-not [imperative callback]
+  (eval-with-callback imperative 
+		      (convert-must-return (not (eval (:code imperative))))
+		      callback))
+
+(defmethod verify-imperative :should [imperative callback]
+  (eval-with-callback imperative 
+		      (convert-should-return (eval (:code imperative)))
+		      callback))
+
+(defmethod verify-imperative :should-not [imperative callback]
+  (eval-with-callback imperative 
+		      (convert-should-return (not (eval (:code imperative))))
+		      callback))
+
+(defn- verify-spec [spec result-callback]
+  (let [imperative-results (for [imperative (:imperatives spec)] (verify-imperative imperative result-callback ))]
     (struct-quack specification-result	
 		  :specification spec
 		  :results imperative-results
@@ -70,8 +84,8 @@
 (defn all-specs []
   @*specs*)
 
-(defn verify [specs]
-  (let [specs-results (map verify-spec specs)]
+(defn verify [specs result-callback]
+  (let [specs-results (for [spec specs] (verify-spec spec result-callback))]
     (struct-quack specification-list-results :specifications specs :results specs-results  :status (verification-status specs-results))))
 
 (defn make-imperative [type description code]
