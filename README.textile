@@ -30,6 +30,14 @@ h2. Example
             true))				
 </code></pre>
 
+Will result in:
+
+<pre><code>
+     [java] ..P
+     [java]  Pending [Failure]
+     [java] 3 Tests ( 2 Successful 0 Failed 1 Pending )
+</code></pre>
+
 h2. TODO
 
 h3. For beta
