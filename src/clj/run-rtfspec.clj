@@ -27,7 +27,9 @@
     (= :success status) 0
     (= :failure status) 1
     (= :should-success status) 0
-    (= :should-failure status) 0))
+    (= :should-failure status) 0
+    (= :exception status) 2
+    :default 666))
 
 (defn- verify-loaded-specs []
   (let [verification-result (verify (all-specs) pretty-print-result)]

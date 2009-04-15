@@ -3,7 +3,7 @@
 
 (defstruct imperative :kind :description :code)
 (defstruct specification :name :imperatives)
-(defstruct imperative-result :imperative :status)
+(defstruct imperative-result :imperative :status :extra-info)
 (defstruct specification-result :specification :results :status)
 (defstruct specification-list-results :specifications :results :status)
 
@@ -36,34 +36,45 @@
     status :should-success
     (not status) :should-failure))
 
-(defmacro eval-with-callback [imperative status callback]
-  `(let [imperative-result# (struct-quack imperative-result
-			      :imperative ~imperative
-			      :status ~status)]
-     (~callback imperative-result#) 
-     imperative-result#))
+(defmacro eval-with-callback [imperative callback imperative-execution-code]
+  `(try
+    (let [execution-result# (eval (list ~@imperative-execution-code))]
+      (let [result# 
+	    (struct-quack imperative-result
+			  :imperative ~imperative
+			  :status execution-result#)]
+	(~callback result#)
+	result#))
+    (catch Exception e#
+      (let [result# (struct-quack imperative-result
+				  :imperative ~imperative
+				  :status :exception
+				  :extra-info e#)]
+	(~callback result#)
+	result#)  
+      )))
 
 (defmulti verify-imperative (fn find-kind [imperative _] (imperative :kind)))
 
 (defmethod verify-imperative :must [imperative callback]
-  (eval-with-callback imperative 
-		      (convert-must-return (eval (:code imperative)))
-		      callback))
+  (eval-with-callback imperative
+		      callback
+		      (convert-must-return (eval (:code imperative)))))
 
 (defmethod verify-imperative :must-not [imperative callback]
-  (eval-with-callback imperative 
-		      (convert-must-return (not (eval (:code imperative))))
-		      callback))
+  (eval-with-callback imperative
+		      callback
+		      (convert-must-return (not (eval (:code imperative))))))
 
 (defmethod verify-imperative :should [imperative callback]
-  (eval-with-callback imperative 
-		      (convert-should-return (eval (:code imperative)))
-		      callback))
+  (eval-with-callback imperative
+		      callback
+		      (convert-should-return (eval (:code imperative)))))
 
 (defmethod verify-imperative :should-not [imperative callback]
-  (eval-with-callback imperative 
-		      (convert-should-return (not (eval (:code imperative))))
-		      callback))
+  (eval-with-callback imperative
+		      callback
+		      (convert-should-return (not (eval (:code imperative))))))
 
 (defn- verify-spec [spec result-callback]
   (let [imperative-results (for [imperative (:imperatives spec)] (verify-imperative imperative result-callback ))]
@@ -104,6 +115,9 @@
 
 (defn all-failed-among [results]
   (filter #(= :failure (:status %)) results))
+
+(defn all-exceptions-among [results]
+  (filter #(= :exception (:status %)) results))
 
 (defn all-pending-among [results]
   (filter #(or
