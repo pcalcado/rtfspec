@@ -44,9 +44,7 @@ h3. For beta
 
 *  Documentation :)
 *  Proper ant task
-*  Should list failed specs
-*  Should list exceptions
-*  Cleanup result feedback function passing - it's a mess
+*  Exceptions stacktraces are being print in wrong order
 *  Nice error msgs for malformed facts
 *  Some way to expect an exception
 
