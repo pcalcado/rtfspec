@@ -24,26 +24,35 @@
 (defn- println-unknown [text]
   (println "\n" (wrap-in-color text ansi-purple)))
 
-(defmulti pretty-print-verification-results :status)
+(defn- pretty-formatted-description [imperative]
+  (str (.toUpperCase (str (:kind imperative))) " " (:description imperative)))
 
-(defmethod pretty-print-verification-results :success [spec-list]
-  (println-success "yay"))
+(defn- pretty-print-failures-in [specification results]
+  (doseq [failed-imperative (map :imperative (all-pending-among results))]
+    (println-failure
+     (str "FAILED: "
+	  (:name specification)
+	  " - "
+	  (pretty-formatted-description failed-imperative)))))
 
-(defmethod pretty-print-verification-results :failure [spec-list]
-  (println-failure "nay"))
+(defn- pretty-print-pending-in [specification results]
+  (doseq [pending-imperative (map :imperative (all-pending-among results))]
+    (println-pending 
+     (str "Pending: "
+	  (:name specification)
+	  " - "
+	  (pretty-formatted-description pending-imperative)))))
 
-(defmethod pretty-print-verification-results :should-success [spec-list]
-  (println-pending "Pending [Success]"))
-
-(defmethod pretty-print-verification-results :should-failure [spec-list]
-  (println-pending "Pending [Failure]"))
-
-(defmethod pretty-print-verification-results :default [spec-list]
-  (println-unknown (str spec-list "?")))
+(defn pretty-print-verification-results [spec-list-result]
+  (doseq [given-specification-result (:results spec-list-result)]
+    (let [specification (:specification given-specification-result)
+	  results (:results given-specification-result)]
+      (pretty-print-failures-in  specification results)
+      (pretty-print-pending-in specification results))))
 
 (defn pretty-print-stats [spec-list]
   (let [all-test-results (all-results-in spec-list)]
-    (println (count all-test-results) "Tests ("
+    (println "\n" (count all-test-results) "Tests ("
 	     (wrap-in-color (str (count (all-successful-among all-test-results)) " Successful") ansi-green)
 	     (wrap-in-color (str (count (all-failed-among all-test-results)) " Failed") ansi-red)
 	     (wrap-in-color (str (count (all-pending-among all-test-results)) " Pending" ) ansi-brown) 
