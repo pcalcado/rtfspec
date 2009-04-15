@@ -33,11 +33,12 @@
 (defn- pretty-print-failures-in [specification results]
   (doseq [failed-imperative (map :imperative (all-failed-among results))]
     (println-failure
-     (str "FAILED: "
+     (str "FAILED:"
+	  "\n"
 	  (:name specification)
 	  " - "
-	  (pretty-formatted-description failed-imperative)
-	  "\n"
+	  (pretty-formatted-description failed-imperative) ":"
+	  "\n\t"
 	  (:code failed-imperative)))))
 
 (defn- pretty-print-exceptions-in [specification results]
@@ -45,9 +46,12 @@
     (let [exception-imperative (exception-results :imperative)]
       (println-exception
        (str "EXCEPTION: "
+	    "\n"
 	    (:name specification)
 	    " - "
-	    (pretty-formatted-description exception-imperative)
+	    (pretty-formatted-description exception-imperative) ":"
+	    "\n\t"
+	    (:code exception-imperative)
 	    "\n"))
       (.printStackTrace (:extra-info exception-results))
       (flush))))
