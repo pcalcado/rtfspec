@@ -2,7 +2,8 @@
 <project name="rtfspec" default="package">
   <property name="build.dir" location="classes"/>
 
-  <property name="deps.dir" location="lib"/>
+  <property name="lib.dir" location="lib"/>
+  <property name="deps.dir" location="deps"/>
 
   <property name="source.dir" location="src/clj"/>
 
@@ -12,9 +13,12 @@
 
   <property name="rtfspec.jar" location="rtfspec.jar"/>
   <property name="rtfspec.run.script" location="src/script/rtfspec"/>
-  <property name="rtfspec.run.clj" location="${source.dir}/run-rtfspec.clj"/>
+  <property name="rtfspec.run.clj" location="${source.dir}/run_rtfspec.clj"/>
   
   <path id="dependencies">
+    <fileset dir="${lib.dir}">
+      <include name="*.jar"/>
+    </fileset>
     <fileset dir="${deps.dir}">
       <include name="*.jar"/>
     </fileset>
@@ -38,17 +42,29 @@
     <mkdir dir="${build.dir}"/>
   </target>
 
-  <target name="compile" description="Compile sources">
+  <target name="compile" description="Compile all sources" depends="compile-core, compile-ant" />
+
+  <target name="compile-core">
     <java classname="clojure.lang.Compile" >
       <classpath>
         <path location="${build.dir}"/>
          <path location="${source.dir}"/>
-        <fileset dir="${deps.dir}">
-          <include name="*.jar"/>
-        </fileset>
+	 <path refid="dependencies" />
       </classpath>
       <sysproperty key="clojure.compile.path" value="${build.dir}"/>
-      <arg value="rtfspec"/>
+      <arg value="run-rtfspec"/>
+    </java>
+  </target>
+
+  <target name="compile-ant">
+    <java classname="clojure.lang.Compile" >
+      <classpath>
+        <path location="${build.dir}"/>
+         <path location="${source.dir}"/>
+	 <path refid="dependencies" />
+      </classpath>
+      <sysproperty key="clojure.compile.path" value="${build.dir}"/>
+      <arg value="rtfspecant"/>
     </java>
   </target>
 
@@ -86,32 +102,26 @@
   </target>
 
   <target name="smoke-test" description="">
+    <taskdef name="rtfspec" classname="rtfspecant" classpathref="test.dependencies"/>
+      
     <echo message="----------Success----------"/>
-    <java classname="clojure.lang.Script" failonerror="true" fork="true">
-      <arg value="${rtfspec.run.clj}"/>
-      <arg value="--"/>
-      <arg value="${test.smoke.dir}/success" />
+    <rtfspec failonerror="true" fork="true" dir="${test.smoke.dir}/success">
       <classpath>
 	<path refid="test.dependencies"/>
       </classpath>
-    </java>
+    </rtfspec>
+
     <echo message="----------Failure (Won't break the build)----------"/>
-    <java classname="clojure.lang.Script" failonerror="false" fork="true">
-      <arg value="${rtfspec.run.clj}"/>
-      <arg value="--"/>
-      <arg value="${test.smoke.dir}/failure" />
+    <rtfspec failonerror="false" fork="true" dir="${test.smoke.dir}/failure">
       <classpath>
         <path refid="test.dependencies"/>
       </classpath>
-    </java>
+    </rtfspec>
     <echo message="----------Exception (Won't break the build)----------"/>
-    <java classname="clojure.lang.Script" failonerror="false" fork="true">
-      <arg value="${rtfspec.run.clj}"/>
-      <arg value="--"/>
-      <arg value="${test.smoke.dir}/exception" />
+    <rtfspec failonerror="false" fork="true" dir="${test.smoke.dir}/exception">
       <classpath>
-	<path refid="test.dependencies"/>
+        <path refid="test.dependencies"/>
       </classpath>
-    </java>
+    </rtfspec>
   </target>
 </project>

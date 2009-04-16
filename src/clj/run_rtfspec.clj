@@ -1,4 +1,6 @@
 (ns run-rtfspec
+  (:gen-class
+   )
   (:use rtfspec-domain rtfspec-prettyprint)
   (:import (java.io File)))
 
@@ -37,6 +39,6 @@
     (pretty-print-stats verification-result)
     (translate-status-to-exit-code (:status verification-result))))
 
-(load-specs-from (first *command-line-args*))
-
-(System/exit (verify-loaded-specs))
+(defn -main [& args]
+     (load-specs-from (first args))
+     (System/exit (verify-loaded-specs)))
