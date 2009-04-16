@@ -43,13 +43,13 @@ h2. TODO
 h3. For beta
 
 *  Documentation :)
-*  Proper ant task
 *  Exceptions stacktraces are being print in wrong order
 *  Nice error msgs for malformed facts
 *  Some way to expect an exception
 
 h3. Nice to have
 
+*  Proper ant task
 *  Autospec
 *  Code coverage
 *  Run tests in parallel

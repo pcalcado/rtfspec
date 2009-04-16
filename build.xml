@@ -90,7 +90,7 @@
   <target name="all-tests" description="Run all tests" depends="self-test, smoke-test" />
 
   <target name="self-test" description="Run Rtfspec unit tests">
-    <echo message="----------Self-Test----------"/>
+    <echo message="----------Self-Test (Does not Use Custom Ant Task)----------"/>
     <java classname="clojure.lang.Script" failonerror="true" fork="true">
       <arg value="${rtfspec.run.clj}"/>
       <arg value="--"/>
