@@ -12,8 +12,7 @@
   <property name="test.self.dir" location="${test.base.dir}/self"/>
 
   <property name="rtfspec.jar" location="rtfspec.jar"/>
-  <property name="rtfspec.run.script" location="src/script/rtfspec"/>
-  <property name="rtfspec.run.clj" location="${source.dir}/run_rtfspec.clj"/>
+  <property name="rtfspec.run.class" location="run_rtfspec"/>
   
   <path id="dependencies">
     <fileset dir="${lib.dir}">
@@ -26,7 +25,7 @@
 
   <path id="test.dependencies">
     <path refid="dependencies"/>
-    <path location="${source.dir}"/>
+    <path location="${build.dir}"/>
     <pathelement location="${rtfspec.jar}" />
   </path>
 
@@ -77,29 +76,10 @@
   </target>
 
   <target name="test-clojure" description="Run Smoke tests for Rtfspec">
-    <java classname="clojure.lang.Script" failonerror="true" fork="true">
-      <arg value="${rtfspec.run.clj}"/>
-      <arg value="--"/>
-      <arg value="test/smoke"/>
-      <classpath>
-	<path refid="test.dependencies"/>
-      </classpath>
-    </java>
   </target>
 
-  <target name="all-tests" description="Run all tests" depends="self-test, smoke-test" />
+  <target name="all-tests" description="Run all tests" depends="smoke-test" />
 
-  <target name="self-test" description="Run Rtfspec unit tests">
-    <echo message="----------Self-Test (Does not Use Custom Ant Task)----------"/>
-    <java classname="clojure.lang.Script" failonerror="true" fork="true">
-      <arg value="${rtfspec.run.clj}"/>
-      <arg value="--"/>
-      <arg value="${test.self.dir}" />
-      <classpath>
-	<path refid="test.dependencies"/>
-      </classpath>
-    </java>
-  </target>
 
   <target name="smoke-test" description="">
     <taskdef name="rtfspec" classname="rtfspecant" classpathref="test.dependencies"/>
