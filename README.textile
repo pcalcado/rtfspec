@@ -26,12 +26,11 @@ A typical example using RTFSpec looks like this:
 
 Running this through ant:
 <pre><code>
-
-<rtfspec failonerror="true" fork="true" dir="${test.clojure-core.dir}/">
-      <classpath>
-	<path refid="test.dependencies"/>
-      </classpath>
-    </rtfspec>
+&lt;rtfspec failonerror="true" fork="true" dir="${test.clojure-core.dir}/"&gt;
+      &lt;classpath&gt;
+	&lt;path refid="test.dependencies"/&gt;
+      &lt;/classpath&gt;
+    &lt;/rtfspec&gt;
 </code></pre>
 
 
