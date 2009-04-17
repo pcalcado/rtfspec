@@ -10,6 +10,7 @@
   <property name="test.base.dir" location="test"/>
   <property name="test.smoke.dir" location="${test.base.dir}/smoke"/>
   <property name="test.self.dir" location="${test.base.dir}/self"/>
+  <property name="test.clojure-core.dir" location="${test.base.dir}/clojure-core"/>
 
   <property name="rtfspec.jar" location="rtfspec.jar"/>
   <property name="rtfspec.run.class" location="run_rtfspec"/>
@@ -75,15 +76,10 @@
     </jar>
   </target>
 
-  <target name="test-clojure" description="Run Smoke tests for Rtfspec">
-  </target>
-
-  <target name="all-tests" description="Run all tests" depends="smoke-test" />
+  <target name="all-tests" description="Run all tests" depends="smoke-test, clojure-core-test" />
 
 
-  <target name="smoke-test" description="">
-    <taskdef name="rtfspec" classname="rtfspecant" classpathref="test.dependencies"/>
-      
+  <target name="smoke-test" depends="-rtfspec-task-defined">
     <echo message="----------Success----------"/>
     <rtfspec failonerror="true" fork="true" dir="${test.smoke.dir}/success">
       <classpath>
@@ -97,10 +93,24 @@
         <path refid="test.dependencies"/>
       </classpath>
     </rtfspec>
+
     <echo message="----------Exception (Won't break the build)----------"/>
     <rtfspec failonerror="false" fork="true" dir="${test.smoke.dir}/exception">
       <classpath>
         <path refid="test.dependencies"/>
+      </classpath>
+    </rtfspec>
+  </target>
+
+  <target name="-rtfspec-task-defined">
+    <taskdef name="rtfspec" classname="rtfspecant" classpathref="test.dependencies"/>
+  </target>
+
+  <target name="clojure-core-test" depends="-rtfspec-task-defined">      
+    <echo message="----------Clojure Core Tests----------"/>
+    <rtfspec failonerror="true" fork="true" dir="${test.clojure-core.dir}/">
+      <classpath>
+	<path refid="test.dependencies"/>
       </classpath>
     </rtfspec>
   </target>

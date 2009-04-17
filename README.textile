@@ -1,51 +1,58 @@
 h1. RTFSpec - A Spec-like Testing Framework for Clojure
 
-A testing framework based on "RFC-2119":http://www.ietf.org/rfc/rfc2119.txt
+Tests fulfil two main roles in modern software development:
 
-h2. Example
+* Assert that the code work as specified
+* Document what was specified
+
+Some existing tools for Clojure get the first right but I am not satisfied with how any of them perform in the documentation bit. To solve this problem I present yet another testing framework.
+
+RTFSpec tries to apply the vocabulary defined by "RFC-2119":http://www.ietf.org/rfc/rfc2119.txt , using the imperatives MUST, MUST NOT, SHOULD and SHOULD NOT. I decided to not use MAY and MAY NOT as tests should be deterministic.
+
+A typical example using RTFSpec looks like this:
 
 <pre><code>
 (use 'rtfspec)
 
-(spec "1. MUST 
-       This word, or the terms 'REQUIRED' or 'SHALL', mean that the definition is 
-       an absolute requirement of the specification."
+(spec "List Comprehensions"
+      (must "return a list applying the given function"
+	    (= (list 11 12 13 14 15)
+	       (for [a (list 1 2 3 4 5)] (+ 10 a))))
 
-      (must "be success if test returns true"
-          (= true true))
-
-      (must "allow multiple lines"
-          (and
-	       (and true
-	       	      (= 1 1)
-		      	   (> 1 0))
-			        true)))
-(spec "4. SHOULD NOT   This phrase, or the phrase 'NOT RECOMMENDED' mean that
-       there may exist valid reasons in particular circumstances when the
-       particular behavior is acceptable or even useful, but the full
-       implications should be understood and the case carefully weighed
-       before implementing any behavior described with this label."
-
-      (should-not "break the build because a should block failed"
-            true))				
+      (must "include elements that are not matched by the :while clause"
+		(empty?
+		   (for [a (list 1 2 3 4 5) :when (= a (+ 10 a))] a))))
 </code></pre>
 
-Will result in:
-
+Running this through ant:
 <pre><code>
-     [java] ..P
-     [java]  Pending [Failure]
-     [java] 3 Tests ( 2 Successful 0 Failed 1 Pending )
+
+<rtfspec failonerror="true" fork="true" dir="${test.clojure-core.dir}/">
+      <classpath>
+	<path refid="test.dependencies"/>
+      </classpath>
+    </rtfspec>
 </code></pre>
+
+
+You have the output:
+<pre><code>
+[rtfspec] ..
+[rtfspec]  2 Tests ( 2 Successful 0 Failed 0 Pending 0 Exceptions )
+</code></pre>
+
+
+Check the tests included in the source distribution for more info.
 
 h2. TODO
 
 h3. For beta
 
-*  Documentation :)
-*  Exceptions stacktraces are being print in wrong order
-*  Nice error msgs for malformed facts
-*  Some way to expect an exception
+* Documentation :)
+* Exceptions stacktraces are being print in wrong order
+* Nice error messages for malformed facts
+* Some way to expect an exception
+* Asserters and matchers
 
 h3. Nice to have
 
@@ -54,3 +61,4 @@ h3. Nice to have
 *  Code coverage
 *  Run tests in parallel
 *  More smoke tests, tests for core.clj would be lovely
+* Run functions against a domain
