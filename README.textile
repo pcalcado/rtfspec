@@ -48,16 +48,15 @@ h2. TODO
 h3. For beta
 
 * Documentation :)
-* Exceptions stacktraces are being print in wrong order
+* Exception stacktraces are being print in wrong order
 * Nice error messages for malformed facts
 * Some way to expect an exception
 * Asserters and matchers
 
 h3. Nice to have
 
-*  Proper ant task
-*  Autospec
-*  Code coverage
-*  Run tests in parallel
-*  More smoke tests, tests for core.clj would be lovely
+* Autospec
+* Code coverage
+* Run tests in parallel
+* More smoke tests, tests for core.clj would be lovely
 * Run functions against a domain
