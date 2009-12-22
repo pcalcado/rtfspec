@@ -6,6 +6,7 @@
   <property name="deps.dir" location="deps"/>
 
   <property name="source.dir" location="src/clj"/>
+  <property name="java.source.dir" location="src/java"/>
 
   <property name="test.base.dir" location="test"/>
   <property name="test.smoke.dir" location="${test.base.dir}/smoke"/>
@@ -25,8 +26,7 @@
   </path>
 
   <path id="test.dependencies">
-    <path refid="dependencies"/>
-    <path location="${build.dir}"/>
+    <path refid="dependencies"/> 
     <pathelement location="${rtfspec.jar}" />
   </path>
 
@@ -57,15 +57,11 @@
   </target>
 
   <target name="compile-ant">
-    <java classname="clojure.lang.Compile" >
+    <javac srcdir="${java.source.dir}" destdir="${build.dir}">
       <classpath>
-        <path location="${build.dir}"/>
-         <path location="${source.dir}"/>
-	 <path refid="dependencies" />
+	<path refid="test.dependencies" />
       </classpath>
-      <sysproperty key="clojure.compile.path" value="${build.dir}"/>
-      <arg value="rtfspecant"/>
-    </java>
+    </javac>
   </target>
 
   <target name="jar" depends="init, compile" description="Create jar file">
@@ -82,6 +78,7 @@
   <target name="smoke-test" depends="-rtfspec-task-defined">
     <echo message="----------Success----------"/>
     <rtfspec failonerror="true" fork="true" dir="${test.smoke.dir}/success">
+      
       <classpath>
 	<path refid="test.dependencies"/>
       </classpath>
@@ -103,7 +100,7 @@
   </target>
 
   <target name="-rtfspec-task-defined">
-    <taskdef name="rtfspec" classname="rtfspecant" classpathref="test.dependencies"/>
+    <taskdef name="rtfspec" classname="rtfspec.ant.RTFSpecTask" classpathref="test.dependencies" />
   </target>
 
   <target name="clojure-core-test" depends="-rtfspec-task-defined">      
