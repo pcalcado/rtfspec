@@ -1,9 +1,9 @@
 (ns rtfspec-domain
   (:use struct-quack))
 
-(defstruct imperative :kind :description :code)
-(defstruct specification :name :imperatives)
-(defstruct imperative-result :imperative :status :extra-info)
+(defstruct requirement :kind :description :code)
+(defstruct specification :name :requirements)
+(defstruct requirement-result :requirement :status :extra-info)
 (defstruct specification-result :specification :results :status)
 (defstruct specification-list-results :specifications :results :status)
 
@@ -36,54 +36,54 @@
     status :should-success
     (not status) :should-failure))
 
-(defmacro eval-with-callback [imperative callback imperative-execution-code]
+(defmacro eval-with-callback [requirement callback requirement-execution-code]
   `(try
-    (let [execution-result# (eval (list ~@imperative-execution-code))]
+    (let [execution-result# (eval (list ~@requirement-execution-code))]
       (let [result# 
-	    (struct-quack imperative-result
-			  :imperative ~imperative
+	    (struct-quack requirement-result
+			  :requirement ~requirement
 			  :status execution-result#)]
 	(~callback result#)
 	result#))
     (catch Exception e#
-      (let [result# (struct-quack imperative-result
-				  :imperative ~imperative
+      (let [result# (struct-quack requirement-result
+				  :requirement ~requirement
 				  :status :exception
 				  :extra-info e#)]
 	(~callback result#)
 	result#)  
       )))
 
-(defmulti verify-imperative (fn find-kind [imperative _] (imperative :kind)))
+(defmulti verify-requirement (fn find-kind [requirement _] (requirement :kind)))
 
-(defmethod verify-imperative :must [imperative callback]
-  (eval-with-callback imperative
+(defmethod verify-requirement :must [requirement callback]
+  (eval-with-callback requirement
 		      callback
-		      (convert-must-return (eval (:code imperative)))))
+		      (convert-must-return (eval (:code requirement)))))
 
-(defmethod verify-imperative :must-not [imperative callback]
-  (eval-with-callback imperative
+(defmethod verify-requirement :must-not [requirement callback]
+  (eval-with-callback requirement
 		      callback
-		      (convert-must-return (not (eval (:code imperative))))))
+		      (convert-must-return (not (eval (:code requirement))))))
 
-(defmethod verify-imperative :should [imperative callback]
-  (eval-with-callback imperative
+(defmethod verify-requirement :should [requirement callback]
+  (eval-with-callback requirement
 		      callback
-		      (convert-should-return (eval (:code imperative)))))
+		      (convert-should-return (eval (:code requirement)))))
 
-(defmethod verify-imperative :should-not [imperative callback]
-  (eval-with-callback imperative
+(defmethod verify-requirement :should-not [requirement callback]
+  (eval-with-callback requirement
 		      callback
-		      (convert-should-return (not (eval (:code imperative))))))
+		      (convert-should-return (not (eval (:code requirement))))))
 
 (defn- verify-spec [spec result-callback]
-  (let [imperative-results (for [imperative (:imperatives spec)] (verify-imperative imperative result-callback ))]
+  (let [requirement-results (for [requirement (:requirements spec)] (verify-requirement requirement result-callback ))]
     (struct-quack specification-result	
 		  :specification spec
-		  :results imperative-results
+		  :results requirement-results
 		  :status (reduce 
 			   consolidate-result :success 
-			     imperative-results))))
+			     requirement-results))))
 
 (defn- verification-status [spec-result-list]
   (reduce consolidate-result :success spec-result-list))
@@ -99,11 +99,11 @@
   (let [specs-results (for [spec specs] (verify-spec spec result-callback))]
     (struct-quack specification-list-results :specifications specs :results specs-results  :status (verification-status specs-results))))
 
-(defn make-imperative [type description code]
-  (struct-quack imperative :kind type :description description :code code))
+(defn make-requirement [type description code]
+  (struct-quack requirement :kind type :description description :code code))
 
-(defn make-spec [name imperatives]
-  (struct-quack specification :name name :imperatives imperatives))
+(defn make-spec [name requirements]
+  (struct-quack specification :name name :requirements requirements))
 
 (defn all-results-in [spec-list-result]
   (if spec-list-result

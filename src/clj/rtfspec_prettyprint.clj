@@ -27,43 +27,43 @@
 (defn- println-unknown [text]
   (println "\n" (wrap-in-color text ansi-purple)))
 
-(defn- pretty-formatted-description [imperative]
-  (str (.toUpperCase (str (:kind imperative))) " " (:description imperative)))
+(defn- pretty-formatted-description [requirement]
+  (str (.toUpperCase (str (:kind requirement))) " " (:description requirement)))
 
 (defn- pretty-print-failures-in [specification results]
-  (doseq [failed-imperative (map :imperative (all-failed-among results))]
+  (doseq [failed-requirement (map :requirement (all-failed-among results))]
     (println-failure
      (str "FAILED:"
 	  "\n"
 	  (:name specification)
 	  " - "
-	  (pretty-formatted-description failed-imperative) ":"
+	  (pretty-formatted-description failed-requirement) ":"
 	  "\n\t"
-	  (:code failed-imperative)))))
+	  (:code failed-requirement)))))
 
 (defn- pretty-print-exceptions-in [specification results]
   (doseq [exception-results (all-exceptions-among results)]
-    (let [exception-imperative (exception-results :imperative)]
+    (let [exception-requirement (exception-results :requirement)]
       (println-exception
        (str "EXCEPTION: "
 	    "\n"
 	    (:name specification)
 	    " - "
-	    (pretty-formatted-description exception-imperative) ":"
+	    (pretty-formatted-description exception-requirement) ":"
 	    "\n\t"
-	    (:code exception-imperative)
+	    (:code exception-requirement)
 	    "\n"))
       (.printStackTrace (:extra-info exception-results))
       (flush))))
 
 
 (defn- pretty-print-pending-in [specification results]
-  (doseq [pending-imperative (map :imperative (all-pending-among results))]
+  (doseq [pending-requirement (map :requirement (all-pending-among results))]
     (println-pending 
      (str "Pending: "
 	  (:name specification)
 	  " - "
-	  (pretty-formatted-description pending-imperative)))))
+	  (pretty-formatted-description pending-requirement)))))
 
 (defn pretty-print-verification-results [spec-list-result]
   (doseq [given-specification-result (:results spec-list-result)]
